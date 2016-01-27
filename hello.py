@@ -148,6 +148,129 @@ s1 = 72
 s2 = 85
 r = (s2-s1)/s1*100
 print('rate is %.1f%%' % r)
+classmates = ['Michael', 'Bob', 'Tracy']
+print(classmates)
+print(len(classmates))
+print('用索引来访问list中每一个位置的元素，记得索引是从0开始的')
+print( classmates[0])
+print( classmates[1])
+print( classmates[0])
+print( classmates[len(classmates) - 1])
+print('如果要取最后一个元素，除了计算索引位置外，还可以用-1做索引，直接获取最后一个元素')
+print(classmates[-1])
+print(classmates[-2])
+#追加list元素到末尾
+print('list是一个可变的有序表，所以，可以往list中追加元素到末尾')
+classmates.append('Adam')
+print(classmates)
+#插入list元素到指定位置
+print('也可以把元素插入到指定的位置，比如索引号为1的位置')
+classmates.insert(1, 'Jack')
+print(classmates)
+#删除list末尾元素
+print('要删除list末尾的元素，用pop()方法')
+classmates.pop()
+print(classmates)
+print('要删除指定位置的元素，用pop(i)方法，其中i是索引位置')
+classmates.pop(1)
+print(classmates)
+#替换某个元素
+print('要把某个元素替换成别的元素，可以直接赋值给对应的索引位置')
+classmates[1]='Sarah'
+print(classmates)
+print('list里面的元素的数据类型也可以不同;list元素也可以是另一个list')
+L = ['Apple', 123, True]
+print(L)
+s = ['python', 'java', ['asp', 'php'], 'scheme']
+print(s)
+print(len(s))
+print(s[2][1])
+print('tuple和list非常类似，但是tuple一旦初始化就不能修改')
+classmates = ('Michael', 'Bob', 'Tracy','hl')
+print(classmates)
+print(classmates[3])#取tuple中的数据也需要用【】
+print('''不可变的tuple有什么意义？因为tuple不可变，所以代码更安全。如果可能，能用tuple代替list就尽量用tuple
+tuple的陷阱：当你定义一个tuple时，在定义的时候，tuple的元素就必须被确定下来;
+\nt=(1),定义的不是tuple，是1这个数！这是因为括号()既可以表示tuple，又可以表示数学公式中的小括号，这就产生了歧义，因此，Python规定，这种情况下，按小括号进行计算，计算结果自然是1。
+
+所以，只有1个元素的tuple定义时必须加一个逗号,，来消除歧义''')
+t = (1,)
+print(t)
+t = ('a', 'b', ['A', 'B'])
+print(t[2][0])
+print(t[2][1])
+t[2][0] = 'X'
+t[2][1] = 'Y'
+print(t)
+print(t[2][0])
+print(t[2][1])
+L = [
+    ['Apple', 'Google', 'Microsoft'],
+    ['Java', 'Python', 'Ruby', 'PHP'],
+    ['Adam', 'Bart', 'Lisa']
+]
+# 打印Apple:
+print(L[0][0])
+# 打印Python:
+print(L[1][1])
+# 打印Lisa:
+print(L[2][2])
+print('条件判断')
+age = 20
+if age >= 18:
+    print('your age is', age)
+    print('adult')
+
+print('''根据Python的缩进规则，如果if语句判断是True，就把缩进的两行print语句执行了，否则，什么也不做。
+
+也可以给if添加一个else语句，意思是，如果if判断是False，不要执行if的内容，去把else执行了''')
+age = 3
+if age >= 18:
+    print('your age is', age)
+    print('adult')
+else:
+    print('your age is', age)
+    print('teenager')
+age = 3
+if age >= 18:
+    print('adult')
+elif age >= 6:
+    print('teenager')
+else:
+    print('kid')
+print('if语句执行有个特点，它是从上往下判断，如果在某个判断上是True，把该判断对应的语句执行后，就忽略掉剩下的elif和else')
+#if判断条件还可以简写,如下；只要x是非零数值、非空字符串、非空list等，就判断为True，否则为False
+if x:
+    print('True')
+birth = input('birth: ')
+#if birth < 2000:
+#    print('00前')
+#else:
+#    print('00后')
+print('这是因为input()返回的数据类型是str，str不能直接和整数比较，必须先把str转换成整数。Python提供了int()函数来完成这件事情')
+s = input('birth: ')
+birth = int(s)
+if birth < 2000:
+    print('00前')
+else:
+    print('00后')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
