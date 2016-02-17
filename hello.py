@@ -396,9 +396,9 @@ print('在Python中，定义一个函数要使用def语句，依次写出函数�
 #    else:
 #        return -x
 #print(my_abs(-102))
-from abstest import my_abs
-print(my_abs(-102))
-print(my_abs(-1))
+#from abstest import my_abs
+#print(my_abs(-102))
+#print(my_abs(-1))
 print('''空函数
     如果想定义一个什么事也不做的空函数，可以用pass语句''')
 def nop():
@@ -544,7 +544,173 @@ print(person('Jack', 24, city=extra['city'], job=extra['job']))
 extra = {'city': 'Beijing', 'job': 'Engineer'}
 print(person('Jack', 24, **extra))#简化写法
 print('**extra表示把extra这个dict的所有key-value用关键字参数传入到函数的**kw参数，kw将获得一个dict，注意kw获得的dict是extra的一份拷贝，对kw的改动不会影响到函数外的extra')
+
 print('\n命名关键字参数')
+print('对于关键字参数，函数的调用者可以传入任意不受限制的关键字参数。至于到底传入了哪些，就需要在函数内部通过kw检查。\n仍以person()函数为例，我们希望检查是否有city和job参数.')
+def person(name, age, **kw):
+    if 'city' in kw:
+        # 有city参数
+        pass
+    if 'job' in kw:
+        # 有job参数
+        pass
+    print('name:', name, 'age:', age, 'other:', kw)
+
+print(person('Jack', 24, city='Beijing', addr='Chaoyang', zipcode=123456))
+print('和关键字参数**kw不同，命名关键字参数需要一个特殊分隔符*，*后面的参数被视为命名关键字参数')
+def person(name, age, *, city, job):
+    print(name, age, city, job)
+
+print( person('Jack', 24, city='Beijing', job='Engineer'))
+
+def person(name, age, *, city='Beijing', job):#默认值
+    print(name, age, city, job)
+print(person('Jack', 24, job='Engineer'))
+print('使用命名关键字参数时，要特别注意，*不是参数，而是特殊分隔符。如果缺少*，Python解释器将无法识别位置参数和命名关键字参数')
+
+def person(name, age, city, job):
+    # 缺少 *，city和job被视为位置参数
+    pass
+
+print('\n参数组合\n在Python中定义函数，可以用必选参数、默认参数、可变参数、关键字参数和命名关键字参数，这5种参数都可以组合使用，除了可变参数无法和命名关键字参数混合。但是请注意，参数定义的顺序必须是：必选参数、默认参数、可变参数/命名关键字参数和关键字参数。')
+def f1(a, b, c=0, *args, **kw):
+    print('a =', a, 'b =', b, 'c =', c, 'args =', args, 'kw =', kw)
+
+def f2(a, b, c=0, *, d, **kw):
+    print('a =', a, 'b =', b, 'c =', c, 'd =', d, 'kw =', kw)
+
+print(f1(1, 2))
+print( f1(1, 2, c=3))
+print(f1(1, 2, 3, 'a', 'b'))
+print(f1(1, 2, 3, 'a', 'b', x=99))
+print(f2(1, 2, d=99, ext=None))
+args = (1, 2, 3, 4)
+kw = {'d': 99, 'x': '#'}
+print(f1(*args, **kw))
+args = (1, 2, 3)
+kw = {'d': 88, 'x': '#'}
+print( f2(*args, **kw))
+print('''Python的函数具有非常灵活的参数形态，既可以实现简单的调用，又可以传入非常复杂的参数。
+
+默认参数一定要用不可变对象，如果是可变对象，程序运行时会有逻辑错误！
+
+要注意定义可变参数和关键字参数的语法：
+
+*args是可变参数，args接收的是一个tuple；
+
+**kw是关键字参数，kw接收的是一个dict。
+
+以及调用函数时如何传入可变参数和关键字参数的语法：
+
+可变参数既可以直接传入：func(1, 2, 3)，又可以先组装list或tuple，再通过*args传入：func(*(1, 2, 3))；
+
+关键字参数既可以直接传入：func(a=1, b=2)，又可以先组装dict，再通过**kw传入：func(**{'a': 1, 'b': 2})。
+
+使用*args和**kw是Python的习惯写法，当然也可以用其他参数名，但最好使用习惯用法。
+
+命名的关键字参数是为了限制调用者可以传入的参数名，同时可以提供默认值。
+
+定义命名的关键字参数不要忘了写分隔符*，否则定义的将是位置参数。''')
+
+print('\n递归函数')
+print('在函数内部，可以调用其他函数。如果一个函数在内部调用自身本身，这个函数就是递归函数。')
+def fact(n):
+    if n==1:
+        return 1
+    return n * fact(n - 1)
+
+print(fact(1))
+print(fact(5))
+print(fact(10))
+print('使用递归函数需要注意防止栈溢出。在计算机中，函数调用是通过栈（stack）这种数据结构实现的，每当进入一个函数调用，栈就会加一层栈帧，每当函数返回，栈就会减一层栈帧。由于栈的大小不是无限的，所以，递归调用的次数过多，会导致栈溢出。可以试试fact(1000)')
+#print(fact(1000))
+print('''解决递归调用栈溢出的方法是通过尾递归优化，事实上尾递归和循环的效果是一样的，所以，把循环看成是一种特殊的尾递归函数也是可以的。
+
+尾递归是指，在函数返回的时候，调用自身本身，并且，return语句不能包含表达式。这样，编译器或者解释器就可以把尾递归做优化，使递归本身无论调用多少次，都只占用一个栈帧，不会出现栈溢出的情况。
+
+上面的fact(n)函数由于return n * fact(n - 1)引入了乘法表达式，所以就不是尾递归了。要改成尾递归方式，需要多一点代码，主要是要把每一步的乘积传入到递归函数中：''')
+def fact(n):
+    return fact_iter(n, 1)
+
+def fact_iter(num, product):
+    if num == 1:
+        return product
+    return fact_iter(num - 1, num * product)
+#可以看到，return fact_iter(num - 1, num * product)仅返回递归函数本身，num - 1和num * product在函数调用前就会被计算，不影响函数调用。
+print(fact(997))
+#栈溢出此处最大值为997
+print('''尾递归调用时，如果做了优化，栈不会增长，因此，无论多少次调用也不会导致栈溢出。
+
+遗憾的是，大多数编程语言没有针对尾递归做优化，Python解释器也没有做优化，所以，即使把上面的fact(n)函数改成尾递归方式，也会导致栈溢出。
+
+小结：
+使用递归函数的优点是逻辑简单清晰，缺点是过深的调用会导致栈溢出。
+
+针对尾递归优化的语言可以通过尾递归防止栈溢出。尾递归事实上和循环是等价的，没有循环语句的编程语言只能通过尾递归实现循环。
+
+Python标准的解释器没有针对尾递归做优化，任何递归函数都存在栈溢出的问题。''')
+def hanoi(n,x,y,z):
+    if n==1:
+        print(x,'-->',z)
+    else:
+        hanoi(n-1,x,z,y)#将前n-1个盘子从x移动到y上
+        hanoi(1,x,y,z)#将最底下的最后一个盘子从x移动到z上
+        hanoi(n-1,y,x,z)#将y上的n-1个盘子移动到z上
+#n=int(input('请输入汉诺塔的层数：'))
+#hanoi(n,'x','y','z')
+print('\n神奇的汉诺塔：在世界中心贝拿勒斯（在印度北部）的圣庙里，一块黄铜板上插着三根宝石针。印度教的主神梵天在创造世界的时候，在其中一根针上从下到上地穿好了由大到小的64片金片，这就是所谓的汉诺塔。不论白天黑夜，总有一个僧侣在按照下面的法则移动这些金片：一次只移动一片，不管在哪根针上，小片必须在大片上面。僧侣们预言，当所有的金片都从梵天穿好的那根针上移到另外一根针上时，世界就将在一声霹雳中消灭，而梵塔、庙宇和众生也都将同归于尽.\n实际计算结果是当n=64时，时间将会是5845.54亿年以上')
+
+print('\n\n高级特性')
+
+L = []
+n = 1
+while n <= 99:
+    L.append(n)
+    n = n + 2
+
+print(L)
+print('''\n但是在Python中，代码不是越多越好，而是越少越好。代码不是越复杂越好，而是越简单越好。
+
+基于这一思想，我们来介绍Python中非常有用的高级特性，1行代码能实现的功能，决不写5行代码。请始终牢记，代码越少，开发效率越高。
+;
+切片''')
+print('取一个list或tuple的部分元素是非常常见的操作')
+L = ['Michael', 'Sarah', 'Tracy', 'Bob', 'Jack']
+print([L[0], L[1], L[2]])#笨办法，直接查
+r = []
+n = 3
+for i in range(n):
+    r.append(L[i])
+print(r)#循环办法
+print('对这种经常取指定索引范围的操作，用循环十分繁琐，因此，Python提供了切片（Slice）操作符，能大大简化这种操作')
+print(L[0:3])
+print('''L[0:3]表示，从索引0开始取，直到索引3为止，但不包括索引3。即索引0，1，2，正好是3个元素。
+
+如果第一个索引是0，还可以省略：''')
+print(L[:3])
+print(L[1:3])
+print( L[-2:])
+print(L[-2:-1])
+L = list(range(100))
+print(L)
+print(L[:10])#前10个数
+print(L[-10:])#后10个数
+print( L[10:20])#前11-20个数
+print( L[:10:2])#前10个数，每两个取一个
+print( L[::5])#所有数，每5个取一个
+#甚至什么都不写，只写[:]就可以原样复制一个list
+print('''tuple也是一种list，唯一区别是tuple不可变。因此，tuple也可以用切片操作，只是操作的结果仍是tuple.
+    字符串'xxx'也可以看成是一种list，每个元素就是一个字符。因此，字符串也可以用切片操作，只是操作结果仍是字符串''')
+print((0, 1, 2, 3, 4, 5)[:3])
+print('ABCDEFG'[:3])
+print('ABCDEFG'[::2])
+print('''\n迭代
+    如果给定一个list或tuple，我们可以通过for循环来遍历这个list或tuple，这种遍历我们称为迭代（Iteration）。
+    在Python中，迭代是通过for ... in来完成的，而很多语言比如C或者Java，迭代list是通过下标完成的''')
+
+
+
+
 
 
 
