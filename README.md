@@ -2,4 +2,4 @@
 liao xuefeng xiti
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-杩欐槸瀛︿範python鐨勪竴涓祴璇曞簱
+这是学习python的一个测试库
