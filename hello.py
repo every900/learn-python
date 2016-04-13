@@ -2180,9 +2180,309 @@ True
 >>> type('abc')==type(123)
 False
 
+判断基本数据类型可以直接写int，str等，但如果要判断一个对象是否是函数怎么办？可以使用types模块中定义的常量：
+>>> import types
+>>> def fn():
+...     pass
+...
+>>> type(fn)==types.FunctionType
+True
+>>> type(abs)==types.BuiltinFunctionType
+True
+>>> type(lambda x: x)==types.LambdaType
+True
+>>> type((x for x in range(10)))==types.GeneratorType
+True
+
+    ''')
+print(type(123))
+print(type('abc'))
+print(type(None))
+print(type(abs))
+print(type(a))
+print('''
+    使用isinstance()
+
+对于class的继承关系来说，使用type()就很不方便。我们要判断class的类型，可以使用isinstance()函数。
+
+我们回顾上次的例子，如果继承关系是：
+
+object -> Animal -> Dog -> Husky
+那么，isinstance()就可以告诉我们，一个对象是否是某种类型。先创建3种类型的对象：
+
+>>> a = Animal()
+>>> d = Dog()
+>>> h = Husky()
+然后，判断：
+
+>>> isinstance(h, Husky)
+True
+没有问题，因为h变量指向的就是Husky对象。
+再判断：
+
+>>> isinstance(h, Dog)
+True
+h虽然自身是Husky类型，但由于Husky是从Dog继承下来的，所以，h也还是Dog类型。换句话说，isinstance()判断的是一个对象是否是该类型本身，或者位于该类型的父继承链上。
+
+因此，我们可以确信，h还是Animal类型：
+
+>>> isinstance(h, Animal)
+True
+同理，实际类型是Dog的d也是Animal类型：
+
+>>> isinstance(d, Dog) and isinstance(d, Animal)
+True
+但是，d不是Husky类型：
+
+>>> isinstance(d, Husky)
+False
+能用type()判断的基本类型也可以用isinstance()判断：
+
+>>> isinstance('a', str)
+True
+>>> isinstance(123, int)
+True
+>>> isinstance(b'a', bytes)
+True
+并且还可以判断一个变量是否是某些类型中的一种，比如下面的代码就可以判断是否是list或者tuple：
+
+>>> isinstance([1, 2, 3], (list, tuple))
+True
+>>> isinstance((1, 2, 3), (list, tuple))
+True
+使用dir()
+
+如果要获得一个对象的所有属性和方法，可以使用dir()函数，它返回一个包含字符串的list，比如，获得一个str对象的所有属性和方法：
+
+>>> dir('ABC')
+['__add__', '__class__', '__contains__', '__delattr__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__getitem__', '__getnewargs__', '__gt__', '__hash__', '__init__', '__iter__', '__le__', '__len__', '__lt__', '__mod__', '__mul__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__rmod__', '__rmul__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', 'capitalize', 'casefold', 'center', 'count', 'encode', 'endswith', 'expandtabs', 'find', 'format', 'format_map', 'index', 'isalnum', 'isalpha', 'isdecimal', 'isdigit', 'isidentifier', 'islower', 'isnumeric', 'isprintable', 'isspace', 'istitle', 'isupper', 'join', 'ljust', 'lower', 'lstrip', 'maketrans', 'partition', 'replace', 'rfind', 'rindex', 'rjust', 'rpartition', 'rsplit', 'rstrip', 'split', 'splitlines', 'startswith', 'strip', 'swapcase', 'title', 'translate', 'upper', 'zfill']
+类似__xxx__的属性和方法在Python中都是有特殊用途的，比如__len__方法返回长度。在Python中，如果你调用len()函数试图获取一个对象的长度，实际上，在len()函数内部，它自动去调用该对象的__len__()方法，所以，下面的代码是等价的：
+
+>>> len('ABC')
+3
+>>> 'ABC'.__len__()
+3
+我们自己写的类，如果也想用len(myObj)的话，就自己写一个__len__()方法：
+>>> class MyDog(object):
+...     def __len__(self):
+...         return 100
+...
+>>> dog = MyDog()
+>>> len(dog)
+100
+剩下的都是普通属性或方法，比如lower()返回小写的字符串：
+
+>>> 'ABC'.lower()
+'abc'
+仅仅把属性和方法列出来是不够的，配合getattr()、setattr()以及hasattr()，我们可以直接操作一个对象的状态：
+
+>>> class MyObject(object):
+...     def __init__(self):
+...         self.x = 9
+...     def power(self):
+...         return self.x * self.x
+...
+>>> obj = MyObject()
+紧接着，可以测试该对象的属性：
+
+>>> hasattr(obj, 'x') # 有属性'x'吗？
+True
+>>> obj.x
+9
+>>> hasattr(obj, 'y') # 有属性'y'吗？
+False
+>>> setattr(obj, 'y', 19) # 设置一个属性'y'
+>>> hasattr(obj, 'y') # 有属性'y'吗？
+True
+>>> getattr(obj, 'y') # 获取属性'y'
+19
+>>> obj.y # 获取属性'y'
+19
+如果试图获取不存在的属性，会抛出AttributeError的错误：
+
+>>> getattr(obj, 'z') # 获取属性'z'
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'MyObject' object has no attribute 'z'
+可以传入一个default参数，如果属性不存在，就返回默认值：
+
+>>> getattr(obj, 'z', 404) # 获取属性'z'，如果不存在，返回默认值404
+404
+也可以获得对象的方法：
+
+>>> hasattr(obj, 'power') # 有属性'power'吗？
+True
+>>> getattr(obj, 'power') # 获取属性'power'
+<bound method MyObject.power of <__main__.MyObject object at 0x10077a6a0>>
+>>> fn = getattr(obj, 'power') # 获取属性'power'并赋值到变量fn
+>>> fn # fn指向obj.power
+<bound method MyObject.power of <__main__.MyObject object at 0x10077a6a0>>
+>>> fn() # 调用fn()与调用obj.power()是一样的
+81
+小结
+
+通过内置的一系列函数，我们可以对任意一个Python对象进行剖析，拿到其内部的数据。要注意的是，只有在不知道对象信息的时候，我们才会去获取对象信息。如果可以直接写：
+
+sum = obj.x + obj.y
+就不要写：
+
+sum = getattr(obj, 'x') + getattr(obj, 'y')
+一个正确的用法的例子如下：
+
+def readImage(fp):
+    if hasattr(fp, 'read'):
+        return readData(fp)
+    return None
+假设我们希望从文件流fp中读取图像，我们首先要判断该fp对象是否存在read方法，如果存在，则该对象是一个流，如果不存在，则无法读取。hasattr()就派上了用场。
+
+请注意，在Python这类动态语言中，根据鸭子类型，有read()方法，不代表该fp对象就是一个文件流，它也可能是网络流，也可能是内存中的一个字节流，但只要read()方法返回的是有效的图像数据，就不影响读取图像的功能。
+
+
+''')
+
+print('''
+    实例属性和类属性
+    由于Python是动态语言，根据类创建的实例可以任意绑定属性。
+
+给实例绑定属性的方法是通过实例变量，或者通过self变量：
+
+class Student(object):
+    def __init__(self, name):
+        self.name = name
+
+s = Student('Bob')
+s.score = 90
+但是，如果Student类本身需要绑定一个属性呢？可以直接在class中定义属性，这种属性是类属性，归Student类所有：
+
+class Student(object):
+    name = 'Student'
+当我们定义了一个类属性后，这个属性虽然归类所有，但类的所有实例都可以访问到。来测试一下：
+
+>>> class Student(object):
+...     name = 'Student'
+...
+>>> s = Student() # 创建实例s
+>>> print(s.name) # 打印name属性，因为实例并没有name属性，所以会继续查找class的name属性
+Student
+>>> print(Student.name) # 打印类的name属性
+Student
+>>> s.name = 'Michael' # 给实例绑定name属性
+>>> print(s.name) # 由于实例属性优先级比类属性高，因此，它会屏蔽掉类的name属性
+Michael
+>>> print(Student.name) # 但是类属性并未消失，用Student.name仍然可以访问
+Student
+>>> del s.name # 如果删除实例的name属性
+>>> print(s.name) # 再次调用s.name，由于实例的name属性没有找到，类的name属性就显示出来了
+Student
+从上面的例子可以看出，在编写程序的时候，千万不要把实例属性和类属性使用相同的名字，因为相同名称的实例属性将屏蔽掉类属性，但是当你删除实例属性后，再使用相同的名称，访问到的将是类属性。
+
+    ''')
+
+print('''面向对象高级编程
+数据封装、继承和多态只是面向对象程序设计中最基础的3个概念。在Python中，面向对象还有很多高级特性，允许我们写出非常强大的功能。
+
+我们会讨论多重继承、定制类、元类等概念。
+
+使用__slots__
+
+
+正常情况下，当我们定义了一个class，创建了一个class的实例后，我们可以给该实例绑定任何属性和方法，这就是动态语言的灵活性。先定义class：
+
+class Student(object):
+    pass
+然后，尝试给实例绑定一个属性：
+
+>>> s = Student()
+>>> s.name = 'Michael' # 动态给实例绑定一个属性
+>>> print(s.name)
+Michael
+还可以尝试给实例绑定一个方法：
+
+>>> def set_age(self, age): # 定义一个函数作为实例方法
+...     self.age = age
+...
+>>> from types import MethodType
+>>> s.set_age = MethodType(set_age, s) # 给实例绑定一个方法
+>>> s.set_age(25) # 调用实例方法
+>>> s.age # 测试结果
+25
+
+但是，给一个实例绑定的方法，对另一个实例是不起作用的：
+
+>>> s2 = Student() # 创建新的实例
+>>> s2.set_age(25) # 尝试调用方法
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'Student' object has no attribute 'set_age'
+为了给所有实例都绑定方法，可以给class绑定方法：
+
+>>> def set_score(self, score):
+...     self.score = score
+...
+>>> Student.set_score = MethodType(set_score, Student)
+给class绑定方法后，所有实例均可调用：
+
+>>> s.set_score(100)
+>>> s.score
+100
+>>> s2.set_score(99)
+>>> s2.score
+99
+通常情况下，上面的set_score方法可以直接定义在class中，但动态绑定允许我们在程序运行的过程中动态给class加上功能，这在静态语言中很难实现。
+
+使用__slots__
+
+但是，如果我们想要限制实例的属性怎么办？比如，只允许对Student实例添加name和age属性。
+
+为了达到限制的目的，Python允许在定义class的时候，定义一个特殊的__slots__变量，来限制该class实例能添加的属性：
+
+class Student(object):
+    __slots__ = ('name', 'age') # 用tuple定义允许绑定的属性名称
+然后，我们试试：
+
+>>> s = Student() # 创建新的实例
+>>> s.name = 'Michael' # 绑定属性'name'
+>>> s.age = 25 # 绑定属性'age'
+>>> s.score = 99 # 绑定属性'score'
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'Student' object has no attribute 'score'
+由于'score'没有被放到__slots__中，所以不能绑定score属性，试图绑定score将得到AttributeError的错误。
+
+使用__slots__要注意，__slots__定义的属性仅对当前类实例起作用，对继承的子类是不起作用的：
+
+>>> class GraduateStudent(Student):
+...     pass
+...
+>>> g = GraduateStudent()
+>>> g.score = 9999
+除非在子类中也定义__slots__，这样，子类实例允许定义的属性就是自身的__slots__加上父类的__slots__。
+
+使用@property
+在绑定属性时，如果我们直接把属性暴露出去，虽然写起来很简单，但是，没办法检查参数，导致可以把成绩随便改：
 
 
     ''')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
