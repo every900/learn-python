@@ -83,7 +83,7 @@ StringIO就是在内存中创建的file-like Object，常用作临时缓冲。
 
 >>> f = open('/Users/michael/test.jpg', 'rb')
 >>> f.read()
-b'\xff\xd8\xff\xe1\x00\x18Exif\x00\x00...' # 十六进制表示的字节
+b'\\xff\\xd8\\xff\\xe1\\x00\\x18Exif\\x00\\x00...' # 十六进制表示的字节
 字符编码
 
 要读取非UTF-8编码的文本文件，需要给open()函数传入encoding参数，例如，读取GBK编码的文件：
@@ -211,15 +211,15 @@ BytesIO实现了在内存中读写bytes，我们创建一个BytesIO，然后写�
 >>> f.write('中文'.encode('utf-8'))
 6
 >>> print(f.getvalue())
-b'\xe4\xb8\xad\xe6\x96\x87'
+b'\\xe4\\xb8\\xad\\xe6\\x96\\x87'
 请注意，写入的不是str，而是经过UTF-8编码的bytes。
 
 和StringIO类似，可以用一个bytes初始化BytesIO，然后，像读文件一样读取：
 
 >>> from io import StringIO
->>> f = BytesIO(b'\xe4\xb8\xad\xe6\x96\x87')
+>>> f = BytesIO(b'\\xe4\\xb8\\xad\\xe6\\x96\\x87')
 >>> f.read()
-b'\xe4\xb8\xad\xe6\x96\x87'
+b'\\xe4\\xb8\\xad\\xe6\\x96\\x87'
 小结
 
 StringIO和BytesIO是在内存中操作str和bytes的方法，使得和读写文件具有一致的接口。
@@ -338,7 +338,7 @@ Python提供了pickle模块来实现序列化。
 >>> import pickle
 >>> d = dict(name='Bob', age=20, score=88)
 >>> pickle.dumps(d)
-b'\x80\x03}q\x00(X\x03\x00\x00\x00ageq\x01K\x14X\x05\x00\x00\x00scoreq\x02KXX\x04\x00\x00\x00nameq\x03X\x03\x00\x00\x00Bobq\x04u.'
+b'\\x80\\x03}q\\x00(X\\x03\\x00\\x00\\x00ageq\\x01K\\x14X\\x05\\x00\\x00\\x00scoreq\\x02KXX\\x04\\x00\\x00\\x00nameq\\x03X\\x03\\x00\\x00\\x00Bobq\\x04u.'
 pickle.dumps()方法把任意对象序列化成一个bytes，然后，就可以把这个bytes写入文件。或者用另一个方法pickle.dump()直接把对象序列化后写入一个file-like Object：
 
 >>> f = open('dump.txt', 'wb')
